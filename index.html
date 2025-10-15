@@ -1,0 +1,132 @@
+<!-- ✅ HTML ຮ້ານຂອງເຈົ້າ -->
+<!doctype html>
+<html lang="lo">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Banking game Hub - ຮ້ານ</title>
+  <style>
+    :root{--bg:#fff5f6;--card:#fff;--accent:#d32f2f;--muted:#666}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans Lao',sans-serif;margin:0;background:var(--bg);color:#111}
+    header{background:linear-gradient(180deg,#ffecec,#ffdede);padding:18px;text-align:center}
+    header h1{margin:0;font-size:18px;color:#7a2b2b}
+    .contact{padding:12px;text-align:center;color:#7a2b2b}
+    .container{max-width:720px;margin:14px auto;padding:0 16px}
+    .card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 10px 30px rgba(150,50,50,0.06)}
+    .card .title{font-weight:700;font-size:18px;margin-bottom:8px}
+    .card .desc{color:var(--muted);font-size:13px;margin-bottom:12px}
+    .price{font-size:34px;color:var(--accent);font-weight:800;margin:6px 0}
+    .order-btn{display:block;background:var(--accent);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;text-align:center;width:100%;cursor:pointer;box-shadow:0 6px 18px rgba(211,47,47,0.18)}
+    .small-note{font-size:12px;color:var(--muted);margin-top:8px}
+    .footer{color:var(--muted);text-align:center;margin:28px 0}
+
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center}
+    .modal .box{background:#fff;padding:18px;border-radius:12px;max-width:420px;width:92%}
+    button.ghost{background:transparent;border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Banking game Hub - ຮ້ານບໍລິການ</h1>
+  </header>
+
+  <div class="contact">
+    ຕິດຕໍ່: WhatsApp +856 20 9136 7657 • Facebook: Banking game Hub 
+  </div>
+
+  <main class="container">
+    <div class="card">
+      <div class="title">100ໃຈ ແຖມ 1000ວິວ</div>
+      <div class="desc">ໃຊ້ພວກເຮົາແລ້ວກັບການສົ່ງເຖິງ ງ່າຍແລະໄວ (0-24 ຊົ່ວໂມງ)</div>
+      <div class="price">5,000 ກີບ</div>
+      <button class="order-btn" data-product="100ໃຈ">ສັ່ງຊື້ດຽວນີ້</button>
+    </div>
+
+    <div class="card">
+      <div class="title">200ໃຈ ແຖມ 2000ວິວ</div>
+      <div class="desc">ການສົ່ງແບບດ່ວນ ສາມາດຕິດຕໍ່ສະໜອງເພີ່ມໄດ້</div>
+      <div class="price">9,000 ກີບ</div>
+      <button class="order-btn" data-product="200ໃຈ">ສັ່ງຊື້ດຽວນີ້</button>
+    </div>
+
+    <div class="card">
+      <div class="title">300ໃຈ ແຖມ 3000ວິວ</div>
+      <div class="desc">ລາຄາພິເສດ ແລະບໍລິການຫຼາຍເຕີ້ມ</div>
+      <div class="price">13,500 ກີບ</div>
+      <button class="order-btn" data-product="300ໃຈ">ສັ່ງຊື້ດຽວນີ້</button>
+    </div>
+
+    <div class="footer">© Banking game Hub • ສ້າງໂດຍ ChatGPT</div>
+  </main>
+
+  <!-- ✅ modal ຟອມສັ່ງສິນຄ້າ -->
+  <div class="modal" id="modal">
+    <div class="box">
+      <h3>ຟອມສັ່ງສິນຄ້າ</h3>
+      <div id="modalText" style="margin-bottom:8px;color:#444"></div>
+      <form id="orderForm" style="display:grid;gap:8px">
+        <input type="text" id="custName" placeholder="ຊື່ (ຕ້ອງການ)" required>
+        <input type="tel" id="custPhone" placeholder="ເບີໂທ" required>
+        <input type="text" id="custAddr" placeholder="ທີ່ຢູ່/ຂໍ້ສັ່ງພິເສດ">
+        <input type="number" id="custQty" placeholder="ຈຳນວນ" min="1" value="1" required>
+        <textarea id="custNote" placeholder="ໝາຍເຫດ/ຄໍາຮ້ອງຂໍ (ຖ້າມີ)" rows="3"></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button type="button" class="ghost" id="cancelBtn">ຍົກເລີກ</button>
+          <button type="submit" class="order-btn">ສົ່ງຜ່ານ WhatsApp</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('modal');
+    const orderForm = document.getElementById('orderForm');
+    const modalText = document.getElementById('modalText');
+    const WHATSAPP_NUMBER = '8562097817095'; // ແກ້ເປັນເບີເຈົ້າ
+
+    document.querySelectorAll('.order-btn[data-product]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const product = btn.getAttribute('data-product');
+        const price = btn.parentElement.querySelector('.price').textContent.trim();
+        modalText.textContent = `ທ່ານກຳລັງສັ່ງ: ${product} • ${price}`;
+        modal.style.display='flex';
+      });
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', ()=>{
+      modal.style.display='none';
+    });
+
+    orderForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = custName.value.trim();
+      const phone = custPhone.value.trim();
+      const addr = custAddr.value.trim();
+      const qty = custQty.value.trim();
+      const note = custNote.value.trim();
+      const productText = modalText.textContent;
+
+      if(!name || !phone || !qty){
+        alert('ກະລຸນາປ້ອນຊື່ ແລະ ເບີໂທ');
+        return;
+      }
+
+      const message = encodeURIComponent([
+        'ສັ່ງສິນຄ້າໂດຍ Banking game Hub',
+        productText,
+        `ຊື່: ${name}`,
+        `ເບີ: ${phone}`,
+        `ທີ່ຢູ່: ${addr || '-'}`,
+        `ຈຳນວນ: ${qty}`,
+        note ? `ໝາຍເຫດ: ${note}` : ''
+      ].join('\n'));
+
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`,'_blank');
+      orderForm.reset();
+      modal.style.display='none';
+    });
+  </script>
+</body>
+        </html>
